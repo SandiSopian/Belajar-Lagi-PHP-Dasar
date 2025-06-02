@@ -113,10 +113,6 @@ $pokemon = [
             padding: 15px;
             width: 200px;
         }
-
-        .pokemon-list img {
-            border-radius: 50%;
-        }
     </style>
 </head>
 
