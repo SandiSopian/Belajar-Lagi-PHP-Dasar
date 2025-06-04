@@ -37,7 +37,7 @@ $pokemonDb = query("SELECT * FROM pokemon");
             <tr>
                 <td><?= $i ?></td>
                 <td>
-                    <a href="">ubah</a> |
+                    <a href="ubah.php?id=<?= $row["id"] ?>">ubah</a> |
                     <a href="hapus.php?id=<?= $row["id"] ?>"
                         onclick="return confirm('Yakin ingin menghapus data ini?');">hapus</a>
                 </td>
