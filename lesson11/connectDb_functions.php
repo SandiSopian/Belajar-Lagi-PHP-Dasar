@@ -162,3 +162,45 @@ function upload()
         return false;
     }
 }
+
+// Function untuk registrasi pengguna
+function registrasi($data)
+{
+    global $koneksi;
+    $username = strtolower(stripslashes($data["username"]));
+    $email = strtolower(stripslashes($data["email"]));
+    $password = mysqli_real_escape_string($koneksi, $data["password"]);
+    $password2 = mysqli_real_escape_string($koneksi, $data["password2"]);
+    // Cek apakah username sudah terdaftar
+    $result = mysqli_query($koneksi, "SELECT username FROM user WHERE username = '$username'");
+    if (mysqli_fetch_assoc($result)) {
+        echo "<script>
+            alert('Username sudah terdaftar!');
+            </script>";
+        return false;
+    }
+    // Cek apakah email sudah terdaftar
+    $result = mysqli_query($koneksi, "SELECT email FROM user WHERE email = '$email'");
+    if (mysqli_fetch_assoc($result)) {
+        echo "<script>
+             alert('Email sudah terdaftar!');
+              </script>";
+        return false;
+    }
+
+    // Cek apakah password dan konfirmasi password cocok
+    if ($password !== $password2) {
+        echo "<script>
+              alert('Konfirmasi password tidak sesuai!');
+              </script>";
+        return false;
+    }
+
+    // Enkripsi password
+    $password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Query untuk menambahkan pengguna baru
+    $query = "INSERT INTO user VALUES (NULL, '$username', '$email', '$password')";
+    mysqli_query($koneksi, $query);
+    return mysqli_affected_rows($koneksi);
+}
