@@ -1,4 +1,11 @@
 <?php
+session_start();
+// Cek apakah user sudah login, jika belum arahkan ke halaman login
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+
 require 'connectDb_functions.php';
 
 if (isset($_POST["submit"])) {

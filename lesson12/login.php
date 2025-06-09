@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (isset($_SESSION["login"])) {
+    header("Location: index.php");
+    exit;
+}
+
 require "connectDb_functions.php";
 
 if (isset($_POST["login"])) {
@@ -13,6 +19,11 @@ if (isset($_POST["login"])) {
         $row = mysqli_fetch_assoc($result);
         // Cek password
         if (password_verify($password, $row["password"])) {
+            // Set session
+            $_SESSION["login"] = true;
+            $_SESSION["username"] = $row["username"];
+
+
             header("Location: index.php");
             exit;
         }
@@ -46,9 +57,10 @@ if (isset($_POST["login"])) {
 
         form {
             background-color: #fff;
-            padding: 20px;
+            padding: 60px;
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            justify-content: center;
         }
 
         label {

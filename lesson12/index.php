@@ -1,4 +1,11 @@
 <?php
+session_start();
+// Cek apakah user sudah login, jika belum arahkan ke halaman login
+if (!isset($_SESSION['login'])) {
+    header("Location: login.php");
+    exit;
+}
+
 // Menggunakan koneksi database
 require 'connectDb_functions.php';
 
@@ -24,7 +31,7 @@ if (isset($_POST["cari"])) {
 </head>
 
 <body>
-
+    <a href="logout.php">Logout</a>
     <h1>List Pokemon</h1>
 
     <a href="tambah.php">Tambah data pokemon</a>
@@ -65,6 +72,8 @@ if (isset($_POST["cari"])) {
         <?php endforeach; ?>
 
     </table>
+
+
 </body>
 
 </html>
