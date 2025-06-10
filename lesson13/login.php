@@ -1,11 +1,31 @@
 <?php
 session_start();
+require "connectDb_functions.php";
+
+// Cek Cookie untuk username dan password
+if (isset($_COOKIE['id']) && isset($_COOKIE['key'])) {
+    $id = $_COOKIE['id'];
+    $key = $_COOKIE['key'];
+    // Ambil data user berdasarkan id
+    $result = mysqli_query($koneksi, "SELECT * FROM user WHERE id = '$id'");
+    $row = mysqli_fetch_assoc($result);
+
+    // Cek apakah cookie key sesuai dengan username
+    if ($key === hash('sha256', $row['username'])) {
+        // Set session
+        $_SESSION["login"] = true;
+        header("Location: index.php");
+        exit;
+    }
+}
+
+
+// Cek apakah user sudah login, jika sudah arahkan ke halaman index
 if (isset($_SESSION["login"])) {
     header("Location: index.php");
     exit;
 }
 
-require "connectDb_functions.php";
 
 if (isset($_POST["login"])) {
     $username = $_POST["username"];
@@ -21,6 +41,16 @@ if (isset($_POST["login"])) {
         if (password_verify($password, $row["password"])) {
             // Set session
             $_SESSION["login"] = true;
+
+            // Cek apakah remember me dicentang
+            if (isset($_POST['remember'])) {
+
+                // Buat cookie yang akan bertahan selama 30 hari
+                setcookie('id', hash('sha256', $row["id"]), time() + (86400 * 30), "/");
+                setcookie('key', hash('sha256', $row['username']), time() + (86400 * 30), "/");
+            }
+
+            // Arahkan ke halaman index
             header("Location: index.php");
             exit;
         }
@@ -93,17 +123,27 @@ if (isset($_POST["login"])) {
 <body>
     <form action="login.php" method="post">
         <h1>Sign-in</h1>
-        <?php if (isset($error)) : ?>
-            <p style="color:red; font-style: italic;">Password/Username salah</p>
-        <?php endif; ?>
+        <ul style="list-style-type: none; padding: 0; margin: 0;">
 
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <button type="submit" name="login">Login</button>
+            <?php if (isset($error)) : ?>
+                <p style="color:red; font-style: italic;">Password/Username salah</p>
+            <?php endif; ?>
+            <li>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </li>
+            <li>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </li>
+            <li>
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+            </li>
+            <li>
+                <button type="submit" name="login">Login</button>
+            </li>
+        </ul>
     </form>
 
 
